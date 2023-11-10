@@ -48,7 +48,7 @@ test_pipeline = [
                    'scale_factor'))
 ]
 train_dataloader = dict(
-    batch_size=4,
+    batch_size=16,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -58,7 +58,7 @@ train_dataloader = dict(
         data_root=data_root,
         ann_file='labels/train_trim.json',
         data_prefix=dict(img='train/'),
-        filter_cfg=dict(filter_empty_gt=False, min_size=32),
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
         pipeline=train_pipeline,
         backend_args=backend_args,
         metainfo=metainfo))

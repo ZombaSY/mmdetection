@@ -48,7 +48,7 @@ test_pipeline = [
                    'scale_factor'))
 ]
 train_dataloader = dict(
-    batch_size=16,
+    batch_size=4,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -89,8 +89,8 @@ val_evaluator = dict(
 # inference on test dataset and
 # format the output results for submission.
 test_dataloader = dict(
-    batch_size=4,
-    num_workers=4,
+    batch_size=16,
+    num_workers=8,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),

@@ -26,7 +26,7 @@ model = dict(
         init_cfg=dict(type='Pretrained', checkpoint=pretrained)),
     neck=dict(in_channels=[96, 192, 384, 768]))
 
-max_epochs = 12
+max_epochs = 100
 train_cfg = dict(max_epochs=max_epochs)
 
 # learning rate

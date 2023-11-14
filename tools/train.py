@@ -1,4 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import sys
+sys.path.append('/home/work/projects/mmdetection')
+sys.path.append('/home/work/projects/mmdetection/mmdet')
 import argparse
 import os
 import os.path as osp
@@ -8,7 +11,6 @@ from mmengine.registry import RUNNERS
 from mmengine.runner import Runner
 
 from mmdet.utils import setup_cache_size_limit_of_dynamo
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')

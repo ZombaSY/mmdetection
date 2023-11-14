@@ -29,14 +29,40 @@ metainfo = {
 
 train_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
-    dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
-    dict(type='Resize', scale=(1333, 800), keep_ratio=True),
+    dict(
+        type='LoadAnnotations',
+        with_bbox=True,
+        with_mask=True,
+        poly2mask=False),
+    dict(
+        type='CachedMosaic',
+        img_scale=(640, 640),
+        pad_val=114.0,
+        max_cached_images=20,
+        random_pop=False,
+        prob=0.5),
+    dict(
+        type='CachedMixUp',
+        img_scale=(640, 640),
+        ratio_range=(1.0, 1.0),
+        max_cached_images=10,
+        random_pop=False,
+        pad_val=(114, 114, 114),
+        prob=0.5),
+    dict(
+        type='RandomResize',
+        scale=(1280, 1280),
+        ratio_range=(0.5, 2.0),
+        keep_ratio=True),
+    dict(type='RandomCrop', crop_size=(640, 640)),
+    dict(type='YOLOXHSVRandomAug'),
     dict(type='RandomFlip', prob=0.5),
     dict(type='PackDetInputs')
 ]
+
 test_pipeline = [
     dict(type='LoadImageFromFile', backend_args=backend_args),
-    dict(type='Resize', scale=(1333, 800), keep_ratio=True),
+    dict(type='Resize', scale=(640, 640), keep_ratio=True),
     # If you don't have a gt annotation, delete the pipeline
     dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
     dict(
@@ -45,7 +71,7 @@ test_pipeline = [
                    'scale_factor'))
 ]
 train_dataloader = dict(
-    batch_size=4,
+    batch_size=8,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -60,8 +86,8 @@ train_dataloader = dict(
         backend_args=backend_args,
         metainfo=metainfo))
 val_dataloader = dict(
-    batch_size=2,
-    num_workers=2,
+    batch_size=8,
+    num_workers=4,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),
@@ -74,7 +100,7 @@ val_dataloader = dict(
         pipeline=test_pipeline,
         backend_args=backend_args,
         metainfo=metainfo))
-test_dataloader = val_dataloader
+
 
 val_evaluator = dict(
     type='CocoMetric',
@@ -82,26 +108,24 @@ val_evaluator = dict(
     metric=['bbox', 'segm'],
     format_only=False,
     backend_args=backend_args)
-test_evaluator = val_evaluator
 
-# inference on test dataset and
-# format the output results for submission.
-# test_dataloader = dict(
-#     batch_size=1,
-#     num_workers=2,
-#     persistent_workers=True,
-#     drop_last=False,
-#     sampler=dict(type='DefaultSampler', shuffle=False),
-#     dataset=dict(
-#         type=dataset_type,
-#         data_root=data_root,
-#         ann_file=data_root + 'annotations/image_info_test-dev2017.json',
-#         data_prefix=dict(img='test2017/'),
-#         test_mode=True,
-#         pipeline=test_pipeline))
-# test_evaluator = dict(
-#     type='CocoMetric',
-#     metric=['bbox', 'segm'],
-#     format_only=True,
-#     ann_file=data_root + 'annotations/image_info_test-dev2017.json',
-#     outfile_prefix='./work_dirs/coco_instance/test')
+test_dataloader = dict(
+    batch_size=16,
+    num_workers=8,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False),
+    dataset=dict(
+        type=dataset_type,
+        data_root=data_root,
+        ann_file=data_root + 'annotations/coco_val_trim.json',
+        data_prefix=dict(img='val_image/'),
+        test_mode=True,
+        pipeline=test_pipeline,
+        metainfo=metainfo))
+test_evaluator = dict(
+    type='CocoMetric',
+    metric=['bbox', 'segm'],
+    format_only=True,
+    ann_file=data_root + 'annotations/coco_val_trim.json',
+    outfile_prefix='./work_dirs/coco_instance/test',)

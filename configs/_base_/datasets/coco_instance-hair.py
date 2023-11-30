@@ -51,8 +51,8 @@ train_pipeline = [
         prob=0.5),
     dict(
         type='RandomResize',
-        scale=(1280, 1280),
-        ratio_range=(0.5, 2.0),
+        scale=(768, 768),
+        ratio_range=(0.8, 1.2),
         keep_ratio=True),
     dict(type='RandomCrop', crop_size=(640, 640)),
     dict(type='YOLOXHSVRandomAug'),

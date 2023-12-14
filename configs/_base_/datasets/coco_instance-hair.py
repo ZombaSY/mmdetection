@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = '/home/work/ssy_data/lululab/scalp/230904-data_balance_v2/'
+data_root = '/home/sunyong/workspace/Dataset/lululab/lululab_scalp/original/Hospital/'
 
 # Example to use different file client
 # Method 1: simply set the data root and let the file I/O module
@@ -86,7 +86,7 @@ train_dataloader = dict(
         backend_args=backend_args,
         metainfo=metainfo))
 val_dataloader = dict(
-    batch_size=8,
+    batch_size=8,   
     num_workers=4,
     persistent_workers=True,
     drop_last=False,
@@ -98,7 +98,7 @@ val_dataloader = dict(
         data_prefix=dict(img='val_image/'),
         test_mode=True,
         pipeline=test_pipeline,
-        backend_args=backend_args,
+        backend_args=backend_args,    
         metainfo=metainfo))
 
 
@@ -118,8 +118,8 @@ test_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file=data_root + 'annotations/coco_val_trim.json',
-        data_prefix=dict(img='val_image/'),
+        ann_file=data_root + 'annotations/coco_test.json',
+        data_prefix=dict(img='Folliscope - Image/'),
         test_mode=True,
         pipeline=test_pipeline,
         metainfo=metainfo))
@@ -127,5 +127,5 @@ test_evaluator = dict(
     type='CocoMetric',
     metric=['bbox', 'segm'],
     format_only=True,
-    ann_file=data_root + 'annotations/coco_val_trim.json',
+    ann_file=data_root + 'annotations/coco_test.json',
     outfile_prefix='./work_dirs/coco_instance/test',)

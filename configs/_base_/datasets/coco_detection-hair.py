@@ -39,16 +39,8 @@ train_pipeline = [
         img_scale=(640, 640),
         pad_val=114.0,
         max_cached_images=20,
-        random_pop=False),
-    dict(
-        type='RandomResize',
-        scale=(1280, 1280),
-        ratio_range=(0.5, 2.0),
-        keep_ratio=True),
-    dict(type='RandomCrop', crop_size=(640, 640)),
-    dict(type='YOLOXHSVRandomAug'),
-    dict(type='RandomFlip', prob=0.5),
-    dict(type='Pad', size=(640, 640), pad_val=dict(img=(114, 114, 114))),
+        random_pop=False,
+        prob=0.5),
     dict(
         type='CachedMixUp',
         img_scale=(640, 640),
@@ -57,7 +49,14 @@ train_pipeline = [
         random_pop=False,
         pad_val=(114, 114, 114),
         prob=0.5),
-    # dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1)),
+    dict(
+        type='RandomResize',
+        scale=(768, 768),
+        ratio_range=(0.8, 1.2),
+        keep_ratio=True),
+    dict(type='RandomCrop', crop_size=(640, 640)),
+    dict(type='YOLOXHSVRandomAug'),
+    dict(type='RandomFlip', prob=0.5),
     dict(type='PackDetInputs')
 ]
 
@@ -72,7 +71,7 @@ test_pipeline = [
                    'scale_factor'))
 ]
 train_dataloader = dict(
-    batch_size=4,
+    batch_size=8,
     num_workers=4,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -87,8 +86,8 @@ train_dataloader = dict(
         backend_args=backend_args,
         metainfo=metainfo))
 val_dataloader = dict(
-    batch_size=2,
-    num_workers=2,
+    batch_size=8,
+    num_workers=4,
     persistent_workers=True,
     drop_last=False,
     sampler=dict(type='DefaultSampler', shuffle=False),
@@ -102,6 +101,7 @@ val_dataloader = dict(
         backend_args=backend_args,
         metainfo=metainfo))
 
+
 val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/coco_val_trim.json',
@@ -109,8 +109,6 @@ val_evaluator = dict(
     format_only=False,
     backend_args=backend_args)
 
-# inference on test dataset and
-# format the output results for submission.
 test_dataloader = dict(
     batch_size=8,
     num_workers=8,
@@ -123,7 +121,8 @@ test_dataloader = dict(
         ann_file=data_root + 'annotations/coco_val_trim.json',
         data_prefix=dict(img='val_image/'),
         test_mode=True,
-        pipeline=test_pipeline))
+        pipeline=test_pipeline,
+        metainfo=metainfo))
 test_evaluator = dict(
     type='CocoMetric',
     metric='bbox',

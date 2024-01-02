@@ -76,7 +76,7 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         ann_file='annotations/val.json',
-        data_prefix=dict(img='val/'),
+        data_prefix=dict(img='valid/'),
         test_mode=True,
         pipeline=test_pipeline,
         backend_args=backend_args,    
